@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Tema simplificado para Smart Skip
-/// Compatible con Flutter 3.24+
-
 class AppTheme {
+  // 🎨 Colores globales usados en toda la app
+  static const Color primaryLight = Color(0xFF6750A4);
+  static const Color successLight = Color(0xFF4CAF50);
+  static const Color errorLight = Color(0xFFF44336);
+  static const Color warningLight = Color(0xFFFFC107);
+  static const Color dividerLight = Color(0xFFBDBDBD);
+  static const Color textMediumEmphasisLight = Color(0xFF616161);
+
+  /// 🌞 Tema claro
   static ThemeData lightTheme() {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      primaryColor: primaryLight,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.deepPurple,
+        seedColor: primaryLight,
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: Colors.white,
@@ -37,19 +44,21 @@ class AppTheme {
         labelStyle: GoogleFonts.roboto(fontWeight: FontWeight.w600),
         unselectedLabelStyle:
             GoogleFonts.roboto(fontWeight: FontWeight.w400),
-        labelColor: Colors.deepPurple,
+        labelColor: primaryLight,
         unselectedLabelColor: Colors.grey[600],
-        indicatorColor: Colors.deepPurple,
+        indicatorColor: primaryLight,
       ),
     );
   }
 
+  /// 🌚 Tema oscuro
   static ThemeData darkTheme() {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      primaryColor: primaryLight,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.deepPurple,
+        seedColor: primaryLight,
         brightness: Brightness.dark,
       ),
       scaffoldBackgroundColor: const Color(0xFF121212),
@@ -76,9 +85,9 @@ class AppTheme {
         labelStyle: GoogleFonts.roboto(fontWeight: FontWeight.w600),
         unselectedLabelStyle:
             GoogleFonts.roboto(fontWeight: FontWeight.w400),
-        labelColor: Colors.deepPurple[200],
+        labelColor: primaryLight,
         unselectedLabelColor: Colors.grey[400],
-        indicatorColor: Colors.deepPurple[200],
+        indicatorColor: primaryLight,
       ),
     );
   }
