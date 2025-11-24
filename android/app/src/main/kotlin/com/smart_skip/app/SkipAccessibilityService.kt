@@ -23,8 +23,12 @@ class SkipAccessibilityService : AccessibilityService() {
             feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
             flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
                     AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
-            // opcional: limitar a YouTube
-            // packageNames = arrayOf("com.google.android.youtube")
+            packageNames = arrayOf(
+                "com.google.android.youtube",
+                "com.google.android.apps.youtube.music",
+                "com.facebook.katana",
+                "com.android.chrome"
+            )
         }
         serviceInfo = info
     }
@@ -35,34 +39,44 @@ class SkipAccessibilityService : AccessibilityService() {
             if (now - lastSkipTimestamp < SKIP_DEBOUNCE_MS) return
 
             val root = rootInActiveWindow ?: return
-            val matches = root.findAccessibilityNodeInfosByText("Skip")
 
-            if (matches != null && matches.isNotEmpty()) {
+            val keywords = listOf("Skip", "Omitir")
+            val matches = ArrayList<AccessibilityNodeInfo>()
+
+            for (keyword in keywords) {
+                val found = root.findAccessibilityNodeInfosByText(keyword)
+                if (!found.isNullOrEmpty()) {
+                    matches.addAll(found)
+                }
+            }
+
+            if (matches.isNotEmpty()) {
                 for (node in matches) {
-                    if (node.isClickable) {
-                        if (node.performAction(AccessibilityNodeInfo.ACTION_CLICK)) {
-                            lastSkipTimestamp = now
-                            showToast("Anuncio omitido")
-                            break
-                        }
-                    } else {
-                        var parent = node.parent
-                        while (parent != null) {
-                            if (parent.isClickable) {
-                                if (parent.performAction(AccessibilityNodeInfo.ACTION_CLICK)) {
-                                    lastSkipTimestamp = now
-                                    showToast("Anuncio omitido")
-                                    break
-                                }
-                            }
-                            parent = parent.parent
-                        }
+                    if (attemptClick(node)) {
+                        lastSkipTimestamp = now
+                        showToast("Anuncio omitido")
+                        break
                     }
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun attemptClick(node: AccessibilityNodeInfo): Boolean {
+        if (node.isClickable) {
+            return node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        } else {
+            var parent = node.parent
+            while (parent != null) {
+                if (parent.isClickable) {
+                    return parent.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                }
+                parent = parent.parent
+            }
+        }
+        return false
     }
 
     override fun onInterrupt() {}
