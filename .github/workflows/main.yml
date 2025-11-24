@@ -1,0 +1,44 @@
+name: Compilar APK Flutter
+
+on:
+  push:
+    branches: [ "main" ] # Asegúrate que tu rama se llame 'main' o 'master'
+  workflow_dispatch:      # Esto permite que aparezca un botón para activarlo manualmente
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Bajar el código
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Configurar Java (Necesario para Android)
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # 3. Instalar Flutter
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable' # Usa la versión estable más reciente
+
+    # 4. Bajar dependencias del proyecto
+    - name: Get Dependencies
+      run: flutter pub get
+
+    # 5. Compilar el APK (Release es más ligero que Debug)
+    - name: Build APK
+      run: flutter build apk --release --no-tree-shake-icons
+
+    # 6. Subir el APK para que lo puedas descargar
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release
+        # Esta es la ruta estándar donde Flutter deja el APK
+        path: build/app/outputs/flutter-apk/app-release.apk
